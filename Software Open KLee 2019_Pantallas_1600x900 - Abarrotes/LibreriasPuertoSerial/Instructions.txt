@@ -1,0 +1,3 @@
+Place files thus:
+c:\WorkSpace >> There is the project NetBeans.
+C:\GiovynetSerialPort >> There is the jar and javadoc.

@@ -1,0 +1,519 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package GUInterfaces;
+
+import Clases.Conexion;
+import Clases.Redondeo;
+import Clases.conectar;
+import com.mxrck.autocompleter.TextAutoCompleter;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author 
+ */
+public class GUITipoVentas extends javax.swing.JFrame {
+
+//    conectar cc = new conectar();
+//    Connection cn = cc.conexion();
+    int contador;
+
+    public GUITipoVentas() {
+        initComponents();
+        setLocationRelativeTo(null);
+        lblfecha.setText(fechaact());
+        txtabono.requestFocus();
+        BuscarVentasCredito();      
+    }
+    
+public static String fechaact() {
+        Date fecha = new Date();
+        SimpleDateFormat formatofecha = new SimpleDateFormat("YYYY-MM-dd");
+        return formatofecha.format(fecha);
+    }
+
+    void limpiar() {
+
+        txtnumfact.setText("");
+        txtclientes.setText("");
+        txtabono.setText("");
+        txtsaldo.setText("");
+        cbTipPago.setSelectedItem("---Seleccionar---");
+        jdFechaCancelar.setDateFormatString("");
+    }
+
+    public void BuscarVentasCredito() {
+        TextAutoCompleter textAutoC = new TextAutoCompleter(txtnumfact);
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/system_ventas", "root", "");
+            Statement sent = con.createStatement();
+            ResultSet rs = sent.executeQuery("SELECT num_fact FROM tabla_ventas");
+            rs.next();
+            {         
+                textAutoC.addItem(rs.getString("num_fact"));
+            }
+        } catch (SQLException e) {
+            System.out.println("No se han registrado datos");
+        }
+    }
+    
+   /* public void BuscarClienteCredito() {
+        TextAutoCompleter textAutoC = new TextAutoCompleter(txtbusfact);
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/system_ventas", "root", "");
+            Statement sent = con.createStatement();
+            ResultSet rs = sent.executeQuery("SELECT num_fact FROM cuentas_cobrar");
+            while (rs.next()) {
+                textAutoC.addItem(rs.getString("num_fact"));
+
+            }
+        } catch (SQLException e) {
+            System.out.println("No exite factura");
+        }
+    }*/
+
+    
+    void SaldoCredito() {
+
+        try {
+            double total = Double.parseDouble(this.txttotalcreditos.getText());
+            double abono = Double.parseDouble(this.txtabono.getText());
+            double saldo = total - abono;
+            txtsaldo.setText("" + saldo);
+        } catch (Exception ex) {
+            System.out.println("Saldo de abono es " + ex);
+        }
+    }
+
+    public static double Calculos() {
+        double total = Double.parseDouble(GUITipoVentas.txtsaldo.getText());
+        return Redondeo.redondear(total);
+    }
+/**
+     * *********************************************************************************************************************************
+     */
+    void detallectacobrar() {
+
+
+            String InsertarSQL = "INSERT INTO detallectacobrar (coddetalle, numfactura, clientes, credito, abono,"
+                    + "saldo, fechapago) VALUES (?,?,?,?,?,?,?)";
+            
+            String fecha = lblfecha.getText();
+            String num_fact = txtnumfact.getText();
+            String clientes = txtclientes.getText();
+            String formapag = cbTipPago.getSelectedItem().toString();
+            String totcred = GUITipoVentasActualizar.txttotalcreditovent.getText();
+            String abono = txtabono.getText();
+            String saldo = txtsaldo.getText();
+
+            try {
+
+                PreparedStatement pst = Conexion.conexion().prepareStatement(InsertarSQL);
+                pst.setString(1, num_fact);
+                pst.setString(2, clientes);
+                pst.setString(3, totcred);
+                pst.setString(4, abono);
+                pst.setString(5, saldo);
+                pst.setString(6, fecha);
+                
+                pst.executeUpdate();
+
+            } catch (SQLException ex) {
+                Logger.getLogger(GUITipoVentas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel3 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jdFechaCancelar = new com.toedter.calendar.JDateChooser();
+        txtnumfact = new javax.swing.JTextField();
+        txtclientes = new javax.swing.JTextField();
+        txttotalcreditos = new javax.swing.JTextField();
+        txtabono = new javax.swing.JTextField();
+        txtsaldo = new javax.swing.JTextField();
+        lblfecha = new javax.swing.JLabel();
+        cbTipPago = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("CRÉDITOS VENTAS");
+        setIconImage(new ImageIcon(getClass().getResource("/Recursos/Credito.png")).getImage());
+        setResizable(false);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.setOpaque(false);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel1.setText("Fecha de créditos:");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel2.setText("Nº Factura:");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel3.setText("Cliente:");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel4.setText("Total de crédito:");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel5.setText("Paga con:");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel6.setText("Abono:");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel7.setText("Saldo:");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel8.setText("Fecha a cancelar:");
+
+        jdFechaCancelar.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        jdFechaCancelar.setOpaque(false);
+
+        txtnumfact.setEditable(false);
+        txtnumfact.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtnumfact.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtclientes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtclientes.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtclientes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtclientesKeyPressed(evt);
+            }
+        });
+
+        txttotalcreditos.setEditable(false);
+        txttotalcreditos.setBackground(new java.awt.Color(255, 255, 0));
+        txttotalcreditos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txttotalcreditos.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        txtabono.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtabono.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtabono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtabonoKeyReleased(evt);
+            }
+        });
+
+        txtsaldo.setBackground(new java.awt.Color(255, 204, 204));
+        txtsaldo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtsaldo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        lblfecha.setBackground(new java.awt.Color(255, 255, 204));
+        lblfecha.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblfecha.setForeground(new java.awt.Color(153, 0, 0));
+        lblfecha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblfecha.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        cbTipPago.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cbTipPago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---Seleccionar---", "Abono" }));
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/Ok.png"))); // NOI18N
+        jButton1.setText("Confirmar");
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/Regresar2.png"))); // NOI18N
+        jButton2.setText("Salir");
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jdFechaCancelar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txttotalcreditos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(txtabono, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cbTipPago, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtsaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(txtclientes)
+                    .addComponent(txtnumfact)
+                    .addComponent(lblfecha, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblfecha, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtnumfact, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtclientes, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txttotalcreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtabono, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(43, 43, 43)
+                            .addComponent(txtsaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cbTipPago, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jdFechaCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Créditos", jPanel1);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void txtabonoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtabonoKeyReleased
+        SaldoCredito();
+        try {
+            double Calculos = GUITipoVentas.Calculos();
+            txtsaldo.setText(String.valueOf(Calculos));
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_txtabonoKeyReleased
+
+    private void txtclientesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtclientesKeyPressed
+        try {
+
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+
+                if (this.contador >= 0) {
+
+                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost/system_ventas", "root", "");
+                    Statement st = Conexion.conexion().createStatement();
+                    ResultSet rs = st.executeQuery("SELECT * FROM tabla_ventas WHERE num_fact= '" + this.txtnumfact.getText() + "'");
+                    rs.next();
+                    txtnumfact.setText(String.valueOf(rs.getString("num_fact")));
+                    txtclientes.setText(String.valueOf(rs.getString("cliente")));
+                    txttotalcreditos.setText(String.valueOf(rs.getString("total")));
+                    txtabono.requestFocus();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Ciudado este codigo = " + ex);
+        }
+    }//GEN-LAST:event_txtclientesKeyPressed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String ncuenta, nfact, cli, total, abo, sald, fecp, fecc, tip;
+        String sql = "";
+
+        nfact = txtnumfact.getText();
+        cli = txtclientes.getText();
+        total = txttotalcreditos.getText();
+        abo = txtabono.getText();
+        sald = txtsaldo.getText();
+        fecp = lblfecha.getText();
+        tip = cbTipPago.getSelectedItem().toString();
+
+        sql = "INSERT INTO cuentas_cobrar (num_fact,cliente,total_credito,tipo_pago,abonos,saldos,fecha_pago,fecha_cancelar) VALUES (?,?,?,?,?,?,?,?)";
+        try {
+            PreparedStatement pst = Conexion.conexion().prepareStatement(sql);
+
+            pst.setString(1, nfact);
+            pst.setString(2, cli);
+            pst.setString(3, total);
+            pst.setString(4, tip);
+            pst.setString(5, abo);
+            pst.setString(6, sald);
+            pst.setString(7, fecp);
+            pst.setDate(8, new java.sql.Date(jdFechaCancelar.getDate().getTime()));
+          
+
+            int n = pst.executeUpdate();
+            if (n > 0) {
+                JOptionPane.showMessageDialog(null, "Se ha registrado una nueva cuenta.\n"
+                        + "Operación exitosa");
+                limpiar();
+                txtabono.setText("");
+                txtnumfact.requestFocus();
+                dispose();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GUITipoVentasActualizar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GUITipoVentas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GUITipoVentas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GUITipoVentas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GUITipoVentas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new GUITipoVentas().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox cbTipPago;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private com.toedter.calendar.JDateChooser jdFechaCancelar;
+    public static javax.swing.JLabel lblfecha;
+    public static javax.swing.JTextField txtabono;
+    public static javax.swing.JTextField txtclientes;
+    public static javax.swing.JTextField txtnumfact;
+    public static javax.swing.JTextField txtsaldo;
+    public static javax.swing.JTextField txttotalcreditos;
+    // End of variables declaration//GEN-END:variables
+}

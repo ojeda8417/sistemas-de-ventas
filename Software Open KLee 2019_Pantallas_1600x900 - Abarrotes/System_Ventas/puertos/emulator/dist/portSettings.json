@@ -1,0 +1,1 @@
+{"@type":"util.AppSettings","portSettings":{"deviceName":null,"portName":"COM2","bauds":"9600","parity":"0","dataBits":"8","stopBits":"1","flowControl":"1","readingMode":"0","stringPattern":"","isContinuousReading":"false","readingCommand":"","interval":"0.5"},"pathFiles":null,"stringToBeginReading":null}
